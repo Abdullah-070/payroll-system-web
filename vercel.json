@@ -11,5 +11,9 @@
       "src": "/api/(.*)",
       "dest": "api/index.js"
     }
-  ]
+  ],
+  "env": {
+    "SUPABASE_URL": "https://zmkokxpqlassrosourcnc.supabase.co",
+    "JWT_SECRET": "7eab7b98-601a-4b1d-ac6f-49d98cda4"
+  }
 }
