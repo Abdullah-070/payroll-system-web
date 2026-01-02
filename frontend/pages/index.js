@@ -44,6 +44,9 @@ export default function Home() {
               Register
             </a>
           </div>
+          <p style={{ marginTop: '40px', fontSize: '14px', color: '#666' }}>
+            © 2025 Employee Payroll System | Made by Abdullah
+          </p>
         </div>
       </div>
     </>

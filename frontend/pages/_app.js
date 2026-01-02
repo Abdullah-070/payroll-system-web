@@ -1,13 +1,10 @@
 import '../styles/globals.css';
-import Footer from '../components/Footer';
+import Layout from '../components/Layout';
 
 export default function App({ Component, pageProps }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <main style={{ flex: 1, paddingBottom: '80px' }}>
-        <Component {...pageProps} />
-      </main>
-      <Footer />
-    </div>
+    <Layout>
+      <Component {...pageProps} />
+    </Layout>
   );
 }
