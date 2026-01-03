@@ -36,7 +36,7 @@ app.post('/api/auth/login', async (req, res) => {
 
     // Default credentials (for demo/testing)
     const DEFAULT_USERNAME = 'admin';
-    const DEFAULT_PASSWORD = 'admin123';
+    const DEFAULT_PASSWORD = 'SecurePayroll@2025';
 
     // Check against default credentials first
     if (username === DEFAULT_USERNAME && password === DEFAULT_PASSWORD) {
