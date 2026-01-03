@@ -1,7 +1,27 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://payroll-system-web.vercel.app';
+// Determine API URL based on environment
+const getApiUrl = () => {
+  // For production (Vercel)
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  
+  // For development
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    return 'http://localhost:3000';
+  }
+  
+  // For production without env var (same domain)
+  if (typeof window !== 'undefined') {
+    return window.location.origin;
+  }
+  
+  return 'https://payroll-system-web.vercel.app';
+};
+
+const API_URL = getApiUrl();
 
 const api = axios.create({
   baseURL: `${API_URL}/api`,
