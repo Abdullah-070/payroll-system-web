@@ -35,13 +35,15 @@ app.post('/api/auth/login', async (req, res) => {
     }
 
     // Default credentials (for demo/testing)
-    const DEFAULT_USERNAME = 'admin';
-    const DEFAULT_PASSWORD = 'SecurePayroll@2025';
+    const DEFAULT_ADMIN_USERNAME = 'admin';
+    const DEFAULT_ADMIN_PASSWORD = 'SecurePayroll@2025';
+    const DEFAULT_EMPLOYEE_USERNAME = 'emp1';
+    const DEFAULT_EMPLOYEE_PASSWORD = 'Employee@2025';
 
-    // Check against default credentials first
-    if (username === DEFAULT_USERNAME && password === DEFAULT_PASSWORD) {
+    // Check against admin default credentials first
+    if (username === DEFAULT_ADMIN_USERNAME && password === DEFAULT_ADMIN_PASSWORD) {
       const token = jwt.sign(
-        { user_id: 1, role: 'admin', emp_id: null, username: DEFAULT_USERNAME },
+        { user_id: 1, role: 'admin', emp_id: null, username: DEFAULT_ADMIN_USERNAME },
         JWT_SECRET,
         { expiresIn: '24h' }
       );
@@ -50,9 +52,28 @@ app.post('/api/auth/login', async (req, res) => {
         token,
         user: {
           user_id: 1,
-          username: DEFAULT_USERNAME,
+          username: DEFAULT_ADMIN_USERNAME,
           role: 'admin',
           emp_id: null
+        }
+      });
+    }
+
+    // Check against employee default credentials
+    if (username === DEFAULT_EMPLOYEE_USERNAME && password === DEFAULT_EMPLOYEE_PASSWORD) {
+      const token = jwt.sign(
+        { user_id: 2, role: 'employee', emp_id: 1, username: DEFAULT_EMPLOYEE_USERNAME },
+        JWT_SECRET,
+        { expiresIn: '24h' }
+      );
+
+      return res.json({
+        token,
+        user: {
+          user_id: 2,
+          username: DEFAULT_EMPLOYEE_USERNAME,
+          role: 'employee',
+          emp_id: 1
         }
       });
     }
@@ -76,7 +97,7 @@ app.post('/api/auth/login', async (req, res) => {
 
     // Generate JWT token
     const token = jwt.sign(
-      { user_id: user.user_id, role: user.role, emp_id: user.emp_id },
+      { user_id: user.user_id, role: user.role, emp_id: user.emp_id, username: user.username },
       JWT_SECRET,
       { expiresIn: '24h' }
     );

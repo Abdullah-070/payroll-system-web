@@ -204,66 +204,6 @@ export default function Home() {
                   : 'Access your personal salary information'}
               </p>
 
-              {selectedRole === 'admin' && (
-                <div style={{ 
-                  backgroundColor: '#2a2a3e', 
-                  padding: '30px', 
-                  borderRadius: '12px',
-                  border: '1px solid #3a3a4e',
-                  marginBottom: '30px'
-                }}>
-                  <p style={{ color: '#00d4ff', marginBottom: '15px', fontSize: '14px' }}>
-                    🔑 Admin Credentials:
-                  </p>
-                  <code style={{
-                    backgroundColor: '#1e1e2e',
-                    padding: '15px',
-                    borderRadius: '6px',
-                    display: 'block',
-                    color: '#00ff88',
-                    fontSize: '13px',
-                    marginBottom: '15px',
-                    fontFamily: 'monospace'
-                  }}>
-                    Username: admin<br/>
-                    Password: SecurePayroll@2025
-                  </code>
-                  <p style={{ color: '#666', fontSize: '12px' }}>
-                    💡 Copy these credentials to log in
-                  </p>
-                </div>
-              )}
-
-              {selectedRole === 'employee' && (
-                <div style={{ 
-                  backgroundColor: '#2a2a3e', 
-                  padding: '30px', 
-                  borderRadius: '12px',
-                  border: '1px solid #3a3a4e',
-                  marginBottom: '30px'
-                }}>
-                  <p style={{ color: '#00ff88', marginBottom: '15px', fontSize: '14px' }}>
-                    🔑 Sample Employee Credentials:
-                  </p>
-                  <code style={{
-                    backgroundColor: '#1e1e2e',
-                    padding: '15px',
-                    borderRadius: '6px',
-                    display: 'block',
-                    color: '#00ff88',
-                    fontSize: '13px',
-                    marginBottom: '15px',
-                    fontFamily: 'monospace'
-                  }}>
-                    Username: emp1<br/>
-                    Password: Employee@2025
-                  </code>
-                  <p style={{ color: '#666', fontSize: '12px' }}>
-                    💡 Or register a new account below
-                  </p>
-                </div>
-              )}
-
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
                 <Link href="/auth/login" passHref>
                   <button
