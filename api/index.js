@@ -348,6 +348,20 @@ app.get('/api/health', (req, res) => {
 // ================================================================
 // ERROR HANDLING
 // ================================================================
+// ROOT AND HEALTH CHECK
+// ================================================================
+
+app.get('/', (req, res) => {
+  res.json({ message: 'Payroll System API', status: 'ok' });
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+
+// ================================================================
+// ERROR HANDLER
+// ================================================================
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -355,12 +369,14 @@ app.use((err, req, res, next) => {
 });
 
 // ================================================================
-// START SERVER
+// START SERVER (for local development)
 // ================================================================
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
 
 module.exports = app;
