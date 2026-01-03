@@ -4,16 +4,20 @@
     {
       "src": "api/index.js",
       "use": "@vercel/node"
+    },
+    {
+      "src": "frontend/package.json",
+      "use": "@vercel/next"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
       "dest": "api/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/$1"
     }
-  ],
-  "env": {
-    "SUPABASE_URL": "https://zmkokxpqlassrosourcnc.supabase.co",
-    "JWT_SECRET": "7eab7b98-601a-4b1d-ac6f-49d98cda4"
-  }
+  ]
 }
