@@ -34,8 +34,12 @@ export default function Login() {
       Cookies.set('token', response.data.token);
       Cookies.set('user', JSON.stringify(response.data.user));
       setSuccess('✓ Login successful! Redirecting...');
+      
+      // Redirect based on role
+      const redirectPath = response.data.user.role === 'admin' ? '/admin-dashboard' : '/employee-dashboard';
+      
       setTimeout(() => {
-        router.push('/dashboard');
+        router.push(redirectPath);
       }, 1000);
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed. Please check your credentials.');
