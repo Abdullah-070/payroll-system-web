@@ -32,6 +32,12 @@ export default function EmployeeDashboard() {
     return <div style={{ color: '#fff', textAlign: 'center', paddingTop: '50px' }}>Loading...</div>;
   }
 
+  const handleGoBack = () => {
+    Cookies.remove('token');
+    Cookies.remove('user');
+    router.push('/');
+  };
+
   return (
     <Layout>
       <Head>
@@ -39,12 +45,31 @@ export default function EmployeeDashboard() {
       </Head>
       <div style={{ minHeight: '100vh', backgroundColor: '#1e1e2e', color: '#fff', padding: '40px 20px' }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-          <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '10px', color: '#00ff88' }}>
-            Welcome, {user.username}!
-          </h1>
-          <p style={{ fontSize: '16px', color: '#aaa', marginBottom: '40px' }}>
-            View your profile and salary information
-          </p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+            <div>
+              <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '10px', color: '#00ff88' }}>
+                Welcome, {user.username}!
+              </h1>
+              <p style={{ fontSize: '16px', color: '#aaa', marginBottom: '0' }}>
+                View your profile and salary information
+              </p>
+            </div>
+            <button
+              onClick={handleGoBack}
+              style={{
+                padding: '10px 20px',
+                backgroundColor: '#666',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '6px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                fontSize: '14px',
+              }}
+            >
+              ← Back to Home
+            </button>
+          </div>
 
           {/* Profile Card */}
           <div style={{ backgroundColor: '#2a2a3e', padding: '30px', borderRadius: '8px', border: '1px solid #3a3a4e', marginBottom: '30px' }}>

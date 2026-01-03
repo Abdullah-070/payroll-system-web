@@ -18,6 +18,10 @@ export default function Login() {
     }
   }, [router.query]);
 
+  const handleGoBack = () => {
+    router.push('/');
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -54,7 +58,24 @@ export default function Login() {
       <Head>
         <title>Login - Payroll System</title>
       </Head>
-      <div style={{ backgroundColor: '#1e1e2e', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+      <div style={{ backgroundColor: '#1e1e2e', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', position: 'relative' }}>
+        <button
+          onClick={handleGoBack}
+          style={{
+            position: 'absolute',
+            top: '20px',
+            left: '20px',
+            backgroundColor: 'transparent',
+            border: '1px solid #666',
+            color: '#888',
+            padding: '10px 15px',
+            borderRadius: '6px',
+            cursor: 'pointer',
+            fontSize: '14px',
+          }}
+        >
+          ← Back
+        </button>
         <div style={{ backgroundColor: '#2a2a3e', padding: '40px', borderRadius: '12px', maxWidth: '400px', width: '100%', boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)' }}>
           <h1 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '30px', color: '#00d4ff', textAlign: 'center' }}>
             Login
