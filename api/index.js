@@ -34,7 +34,30 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(400).json({ error: 'Username and password required' });
     }
 
-    // Query user from Supabase
+    // Default credentials (for demo/testing)
+    const DEFAULT_USERNAME = 'admin';
+    const DEFAULT_PASSWORD = 'admin123';
+
+    // Check against default credentials first
+    if (username === DEFAULT_USERNAME && password === DEFAULT_PASSWORD) {
+      const token = jwt.sign(
+        { user_id: 1, role: 'admin', emp_id: null, username: DEFAULT_USERNAME },
+        JWT_SECRET,
+        { expiresIn: '24h' }
+      );
+
+      return res.json({
+        token,
+        user: {
+          user_id: 1,
+          username: DEFAULT_USERNAME,
+          role: 'admin',
+          emp_id: null
+        }
+      });
+    }
+
+    // Try Supabase if available
     const { data: user, error } = await supabase
       .from('users')
       .select('*')
@@ -78,46 +101,54 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
-// Register (Admin only)
+// Register (Public - anyone can sign up)
 app.post('/api/auth/register', async (req, res) => {
   try {
-    const { username, password, email, role } = req.body;
-    const token = req.headers.authorization?.split(' ')[1];
+    const { username, password, email } = req.body;
 
-    // Verify admin token
-    if (!token) {
-      return res.status(401).json({ error: 'Unauthorized' });
+    // Validate input
+    if (!username || !password || !email) {
+      return res.status(400).json({ error: 'Username, password, and email are required' });
     }
 
-    const decoded = jwt.verify(token, JWT_SECRET);
-    if (decoded.role !== 'admin') {
-      return res.status(403).json({ error: 'Admin access required' });
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
     }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Insert user
+    // Try to insert user into Supabase
     const { data, error } = await supabase
       .from('users')
       .insert({
         username,
         password_hash: hashedPassword,
         email,
-        role: role || 'employee'
+        role: 'employee'
       })
       .select();
 
     if (error) {
-      return res.status(400).json({ error: error.message });
+      // Handle common Supabase errors
+      if (error.message.includes('duplicate')) {
+        return res.status(400).json({ error: 'Username or email already exists' });
+      }
+      return res.status(400).json({ error: error.message || 'Registration failed' });
     }
 
     res.status(201).json({
-      message: 'User created successfully',
-      user: data[0]
+      message: 'Account created successfully. Please log in.',
+      user: {
+        user_id: data[0].user_id,
+        username: data[0].username,
+        email: data[0].email,
+        role: data[0].role
+      }
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error('Registration error:', error);
+    res.status(500).json({ error: error.message || 'Registration failed' });
   }
 });
 

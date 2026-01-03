@@ -12,6 +12,7 @@ export default function Register() {
     confirmPassword: '',
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -22,6 +23,7 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
 
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
@@ -31,15 +33,22 @@ export default function Register() {
     setLoading(true);
 
     try {
-      await auth.register(
+      const response = await auth.register(
         formData.username,
         formData.password,
         formData.email,
         'employee'
       );
-      router.push('/auth/login?registered=true');
+      
+      setSuccess('✓ Account created successfully! Redirecting to login...');
+      setFormData({ username: '', email: '', password: '', confirmPassword: '' });
+      
+      setTimeout(() => {
+        router.push('/auth/login');
+      }, 2000);
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed. Please try again.');
+      console.error('Registration error:', err);
     } finally {
       setLoading(false);
     }
@@ -58,7 +67,13 @@ export default function Register() {
 
           {error && (
             <div style={{ backgroundColor: '#ff4455', color: '#fff', padding: '12px', borderRadius: '6px', marginBottom: '20px', fontSize: '14px' }}>
-              {error}
+              ✗ {error}
+            </div>
+          )}
+
+          {success && (
+            <div style={{ backgroundColor: '#00ff88', color: '#000', padding: '12px', borderRadius: '6px', marginBottom: '20px', fontSize: '14px', fontWeight: '600' }}>
+              {success}
             </div>
           )}
 

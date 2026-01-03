@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Cookies from 'js-cookie';
@@ -8,7 +8,15 @@ export default function Login() {
   const router = useRouter();
   const [formData, setFormData] = useState({ username: '', password: '' });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Show success message if just registered
+  useEffect(() => {
+    if (router.query.registered === 'true') {
+      setSuccess('✓ Registration successful! You can now log in.');
+    }
+  }, [router.query]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,15 +26,20 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
     setLoading(true);
 
     try {
       const response = await auth.login(formData.username, formData.password);
       Cookies.set('token', response.data.token);
       Cookies.set('user', JSON.stringify(response.data.user));
-      router.push('/dashboard');
+      setSuccess('✓ Login successful! Redirecting...');
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 1000);
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
+      setError(err.response?.data?.error || 'Login failed. Please check your credentials.');
+      console.error('Login error:', err);
     } finally {
       setLoading(false);
     }
@@ -45,7 +58,13 @@ export default function Login() {
 
           {error && (
             <div style={{ backgroundColor: '#ff4455', color: '#fff', padding: '12px', borderRadius: '6px', marginBottom: '20px', fontSize: '14px' }}>
-              {error}
+              ✗ {error}
+            </div>
+          )}
+
+          {success && (
+            <div style={{ backgroundColor: '#00ff88', color: '#000', padding: '12px', borderRadius: '6px', marginBottom: '20px', fontSize: '14px', fontWeight: '600' }}>
+              {success}
             </div>
           )}
 
