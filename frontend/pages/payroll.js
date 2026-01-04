@@ -300,9 +300,9 @@ export default function Payroll() {
                       <td style={{ padding: '12px', color: '#fff' }}>
                         {employeeList.find((e) => e.emp_id === record.emp_id)?.name || 'Unknown'}
                       </td>
-                      <td style={{ padding: '12px', color: '#fff' }}>₹{record.basic_salary?.toFixed(2)}</td>
-                      <td style={{ padding: '12px', color: '#fff' }}>₹{record.gross_salary?.toFixed(2)}</td>
-                      <td style={{ padding: '12px', color: '#fff' }}>₹{record.net_salary?.toFixed(2)}</td>
+                      <td style={{ padding: '12px', color: '#fff' }}>PKR {record.basic_salary?.toFixed(2)}</td>
+                      <td style={{ padding: '12px', color: '#fff' }}>PKR {record.gross_salary?.toFixed(2)}</td>
+                      <td style={{ padding: '12px', color: '#fff' }}>PKR {record.net_salary?.toFixed(2)}</td>
                       <td style={{ padding: '12px', color: '#fff' }}>
                         {new Date(record.payroll_date).toLocaleDateString()}
                       </td>

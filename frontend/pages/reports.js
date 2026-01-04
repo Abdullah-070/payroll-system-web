@@ -81,7 +81,7 @@ export default function Reports() {
                       </td>
                       <td style={{ padding: '12px', color: '#fff' }}>{record.payroll_year}</td>
                       <td style={{ padding: '12px', color: '#fff' }}>
-                        ₹{((record.total_salary_paid || 0) + (record.total_allowances_paid || 0)).toFixed(2)}
+                        PKR {((record.total_salary_paid || 0) + (record.total_allowances_paid || 0)).toFixed(2)}
                       </td>
                       <td style={{ padding: '12px', color: '#fff' }}>{record.employee_count || 0}</td>
                     </tr>

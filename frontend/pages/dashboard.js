@@ -18,7 +18,14 @@ export default function Dashboard() {
     }
 
     if (userData) {
-      setUser(JSON.parse(userData));
+      const parsedUser = JSON.parse(userData);
+      setUser(parsedUser);
+      
+      // Redirect employees to their own dashboard
+      if (parsedUser.role === 'employee') {
+        router.push('/employee-dashboard');
+        return;
+      }
     }
   }, [router]);
 
