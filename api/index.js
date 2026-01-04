@@ -36,7 +36,7 @@ app.post('/api/auth/login', async (req, res) => {
 
     // Default credentials (for demo/testing)
     const DEFAULT_ADMIN_USERNAME = 'admin';
-    const DEFAULT_ADMIN_PASSWORD = 'SecurePayroll@2025';
+    const DEFAULT_ADMIN_PASSWORD = 'admin123';
     const DEFAULT_EMPLOYEE_USERNAME = 'emp1';
     const DEFAULT_EMPLOYEE_PASSWORD = 'Employee@2025';
 

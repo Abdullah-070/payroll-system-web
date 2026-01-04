@@ -204,7 +204,13 @@ export default function Home() {
                   : 'Access your personal salary information'}
               </p>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: selectedRole === 'admin' ? '1fr' : '1fr 1fr', 
+                gap: '15px',
+                maxWidth: selectedRole === 'admin' ? '250px' : '100%',
+                margin: selectedRole === 'admin' ? '0 auto' : '0'
+              }}>
                 <Link href="/auth/login" passHref>
                   <button
                     style={{
