@@ -74,6 +74,8 @@ export const payroll = {
     api.get('/payroll', { params: filters }),
   create: (data) => api.post('/payroll', data),
   getSummary: () => api.get('/payroll/summary'),
+  generate: (month, year) =>
+    api.post('/payroll/generate', { month, year }),
 };
 
 // Health check

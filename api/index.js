@@ -397,6 +397,99 @@ app.post('/api/payroll', async (req, res) => {
   }
 });
 
+// Auto-generate payroll for all employees
+app.post('/api/payroll/generate', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.role !== 'admin') {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const { month, year } = req.body;
+
+    if (!month || !year) {
+      return res.status(400).json({ error: 'Month and year are required' });
+    }
+
+    // Get all employees
+    const { data: employees, error: empError } = await supabase
+      .from('employees')
+      .select('*');
+
+    if (empError) throw empError;
+
+    if (!employees || employees.length === 0) {
+      return res.status(400).json({ error: 'No employees found' });
+    }
+
+    const payrollRecords = [];
+    const today = new Date();
+
+    // Generate payroll for each employee
+    for (const emp of employees) {
+      // Skip if base_salary is not set
+      if (!emp.base_salary || emp.base_salary === 0) {
+        continue;
+      }
+
+      // Calculate basic salary (assuming 22 working days per month)
+      const working_days = 22;
+      const rate_per_day = emp.base_salary / 22;
+      const basic_salary = emp.base_salary;
+      const gross_salary = basic_salary;
+      const net_salary = basic_salary;
+      const total_salary = net_salary;
+
+      payrollRecords.push({
+        emp_id: emp.emp_id,
+        working_days,
+        rate_per_day,
+        basic_salary,
+        gross_salary,
+        net_salary,
+        total_salary,
+        total_allowances: 0,
+        overtime_bonus: 0,
+        total_bonus: 0,
+        total_deductions: 0,
+        payroll_date: today,
+        payroll_month: month,
+        payroll_year: year,
+        status: 'draft'
+      });
+    }
+
+    if (payrollRecords.length === 0) {
+      return res.status(400).json({ error: 'No employees with base salary set' });
+    }
+
+    // Insert all payroll records
+    const { data, error } = await supabase
+      .from('payroll')
+      .insert(payrollRecords)
+      .select();
+
+    if (error) {
+      console.error('Payroll generation error:', error);
+      return res.status(400).json({ error: error.message || 'Failed to generate payroll' });
+    }
+
+    res.status(201).json({
+      message: `Payroll generated for ${payrollRecords.length} employees`,
+      count: payrollRecords.length,
+      records: data
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get payroll summary
 app.get('/api/payroll/summary', async (req, res) => {
   try {
