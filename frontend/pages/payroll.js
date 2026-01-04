@@ -6,6 +6,7 @@ import { payroll, employees } from '../utils/api';
 
 export default function Payroll() {
   const router = useRouter();
+  const [user, setUser] = useState(null);
   const [payrollList, setPayrollList] = useState([]);
   const [employeeList, setEmployeeList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,10 +24,13 @@ export default function Payroll() {
 
   useEffect(() => {
     const token = Cookies.get('token');
+    const userData = Cookies.get('user');
     if (!token) {
       router.push('/auth/login');
       return;
     }
+    const parsedUser = JSON.parse(userData);
+    setUser(parsedUser);
     loadData();
   }, [router]);
 
@@ -95,20 +99,22 @@ export default function Payroll() {
             <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: '#00ff88' }}>
               Payroll Management
             </h1>
-            <button
-              onClick={() => setShowForm(!showForm)}
-              style={{
-                padding: '12px 24px',
-                backgroundColor: '#00ff88',
-                color: '#000',
-                border: 'none',
-                borderRadius: '6px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-              }}
-            >
-              {showForm ? 'Cancel' : 'New Payroll'}
-            </button>
+            {user?.role === 'admin' && (
+              <button
+                onClick={() => setShowForm(!showForm)}
+                style={{
+                  padding: '12px 24px',
+                  backgroundColor: '#00ff88',
+                  color: '#000',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                }}
+              >
+                {showForm ? 'Cancel' : 'New Payroll'}
+              </button>
+            )}
           </div>
 
           {error && (
@@ -117,7 +123,7 @@ export default function Payroll() {
             </div>
           )}
 
-          {showForm && (
+          {user?.role === 'admin' && showForm && (
             <form onSubmit={handleSubmit} style={{
               backgroundColor: '#2a2a3e',
               padding: '30px',
