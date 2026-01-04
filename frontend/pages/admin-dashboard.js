@@ -125,6 +125,21 @@ export default function AdminDashboard() {
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
               <button
+                onClick={() => router.push('/add-employee')}
+                style={{
+                  padding: '15px 20px',
+                  backgroundColor: '#ff6b9d',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                }}
+              >
+                ➕ Add Employee
+              </button>
+              <button
                 onClick={() => router.push('/employees')}
                 style={{
                   padding: '15px 20px',
@@ -137,7 +152,7 @@ export default function AdminDashboard() {
                   fontSize: '14px',
                 }}
               >
-                Manage Employees
+                👥 Manage Employees
               </button>
               <button
                 onClick={() => router.push('/payroll')}
@@ -152,7 +167,7 @@ export default function AdminDashboard() {
                   fontSize: '14px',
                 }}
               >
-                Process Payroll
+                💰 Process Payroll
               </button>
               <button
                 onClick={() => router.push('/reports')}
@@ -167,7 +182,7 @@ export default function AdminDashboard() {
                   fontSize: '14px',
                 }}
               >
-                View Reports
+                📊 View Reports
               </button>
             </div>
           </div>
