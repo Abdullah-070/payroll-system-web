@@ -86,13 +86,13 @@ app.post('/api/auth/login', async (req, res) => {
       .single();
 
     if (error || !user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(400).json({ error: 'Invalid credentials' });
     }
 
     // Verify password
     const validPassword = await bcrypt.compare(password, user.password_hash);
     if (!validPassword) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(400).json({ error: 'Invalid credentials' });
     }
 
     // Generate JWT token
