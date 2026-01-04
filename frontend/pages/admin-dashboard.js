@@ -31,12 +31,6 @@ export default function AdminDashboard() {
     return <div style={{ color: '#fff', textAlign: 'center', paddingTop: '50px' }}>Loading...</div>;
   }
 
-  const handleGoBack = () => {
-    Cookies.remove('token');
-    Cookies.remove('user');
-    router.push('/');
-  };
-
   return (
     <Layout>
       <Head>
@@ -44,30 +38,13 @@ export default function AdminDashboard() {
       </Head>
       <div style={{ minHeight: '100vh', backgroundColor: '#1e1e2e', color: '#fff', padding: '40px 20px' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-            <div>
-              <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '10px', color: '#00d4ff' }}>
-                Admin Dashboard
-              </h1>
-              <p style={{ fontSize: '16px', color: '#aaa', marginBottom: '0' }}>
-                Welcome back, {user.username}! Manage employees and payroll.
-              </p>
-            </div>
-            <button
-              onClick={handleGoBack}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#666',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '6px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                fontSize: '14px',
-              }}
-            >
-              ← Back to Home
-            </button>
+          <div style={{ marginBottom: '30px' }}>
+            <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '10px', color: '#00d4ff' }}>
+              Admin Dashboard
+            </h1>
+            <p style={{ fontSize: '16px', color: '#aaa', marginBottom: '0' }}>
+              Welcome back, {user.username}! Manage employees and payroll.
+            </p>
           </div>
 
           {/* Stats Grid */}

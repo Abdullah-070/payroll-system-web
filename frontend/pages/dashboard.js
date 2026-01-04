@@ -21,6 +21,12 @@ export default function Dashboard() {
       const parsedUser = JSON.parse(userData);
       setUser(parsedUser);
       
+      // Redirect admins to admin dashboard
+      if (parsedUser.role === 'admin') {
+        router.push('/admin-dashboard');
+        return;
+      }
+      
       // Redirect employees to their own dashboard
       if (parsedUser.role === 'employee') {
         router.push('/employee-dashboard');
