@@ -14,6 +14,8 @@ export default function Register() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleGoBack = () => {
     router.push('/');
@@ -149,46 +151,88 @@ export default function Register() {
               <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
                 Password
               </label>
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Create a password"
-                required
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  border: '2px solid #3a3a4e',
-                  borderRadius: '6px',
-                  backgroundColor: '#1e1e2e',
-                  color: '#fff',
-                  fontSize: '16px',
-                }}
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Create a password"
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    paddingRight: '45px',
+                    border: '2px solid #3a3a4e',
+                    borderRadius: '6px',
+                    backgroundColor: '#1e1e2e',
+                    color: '#fff',
+                    fontSize: '16px',
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    color: '#00d4ff',
+                    cursor: 'pointer',
+                    fontSize: '18px',
+                    padding: '0',
+                  }}
+                >
+                  {showPassword ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
             </div>
 
             <div style={{ marginBottom: '30px' }}>
               <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
                 Confirm Password
               </label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                placeholder="Confirm your password"
-                required
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  border: '2px solid #3a3a4e',
-                  borderRadius: '6px',
-                  backgroundColor: '#1e1e2e',
-                  color: '#fff',
-                  fontSize: '16px',
-                }}
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Confirm your password"
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '12px',
+                    paddingRight: '45px',
+                    border: '2px solid #3a3a4e',
+                    borderRadius: '6px',
+                    backgroundColor: '#1e1e2e',
+                    color: '#fff',
+                    fontSize: '16px',
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    backgroundColor: 'transparent',
+                    border: 'none',
+                    color: '#00d4ff',
+                    cursor: 'pointer',
+                    fontSize: '18px',
+                    padding: '0',
+                  }}
+                >
+                  {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                </button>
+              </div>
             </div>
 
             <button
