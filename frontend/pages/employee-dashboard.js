@@ -34,6 +34,7 @@ export default function EmployeeDashboard() {
         if (parsedUser.emp_id) {
           const response = await employees.getOne(parsedUser.emp_id);
           const emp = response.data;
+          console.log('Employee data:', emp);
           setProfile({
             name: emp.name || 'Loading...',
             designation: emp.designation || '--',
@@ -66,30 +67,13 @@ export default function EmployeeDashboard() {
       </Head>
       <div style={{ minHeight: '100vh', backgroundColor: '#1e1e2e', color: '#fff', padding: '40px 20px' }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
-            <div>
-              <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '10px', color: '#00ff88' }}>
-                Welcome, {user.username}!
-              </h1>
-              <p style={{ fontSize: '16px', color: '#aaa', marginBottom: '0' }}>
-                View your profile and salary information
-              </p>
-            </div>
-            <button
-              onClick={handleGoBack}
-              style={{
-                padding: '10px 20px',
-                backgroundColor: '#666',
-                color: '#fff',
-                border: 'none',
-                borderRadius: '6px',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                fontSize: '14px',
-              }}
-            >
-              ← Back to Home
-            </button>
+          <div style={{ marginBottom: '30px' }}>
+            <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '10px', color: '#00ff88' }}>
+              Welcome, {user.username}!
+            </h1>
+            <p style={{ fontSize: '16px', color: '#aaa', marginBottom: '0' }}>
+              View your profile and salary information
+            </p>
           </div>
 
           {/* Profile Card */}
@@ -122,37 +106,39 @@ export default function EmployeeDashboard() {
             <h2 style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '20px', color: '#00ff88' }}>
               My Information
             </h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
-              <button
-                onClick={() => router.push('/payroll')}
-                style={{
-                  padding: '15px 20px',
-                  backgroundColor: '#00d4ff',
-                  color: '#000',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                }}
-              >
-                View My Payroll
-              </button>
-              <button
-                onClick={() => router.push('/reports')}
-                style={{
-                  padding: '15px 20px',
-                  backgroundColor: '#ffd700',
-                  color: '#000',
-                  border: 'none',
-                  borderRadius: '6px',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  fontSize: '14px',
-                }}
-              >
-                Download Salary Slip
-              </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                <button
+                  onClick={() => router.push('/payroll')}
+                  style={{
+                    padding: '15px 20px',
+                    backgroundColor: '#00d4ff',
+                    color: '#000',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                  }}
+                >
+                  View My Payroll
+                </button>
+                <button
+                  onClick={() => router.push('/reports')}
+                  style={{
+                    padding: '15px 20px',
+                    backgroundColor: '#ffd700',
+                    color: '#000',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                  }}
+                >
+                  Download Salary Slip
+                </button>
+              </div>
               <button
                 onClick={() => {
                   Cookies.remove('token');
