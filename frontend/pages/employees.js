@@ -17,6 +17,8 @@ export default function Employees() {
     designation: '',
     email: '',
     contact: '',
+    department: '',
+    base_salary: '',
   });
 
   useEffect(() => {
@@ -56,6 +58,8 @@ export default function Employees() {
         designation: '',
         email: '',
         contact: '',
+        department: '',
+        base_salary: '',
       });
       setShowForm(false);
       loadEmployees();
@@ -226,6 +230,46 @@ export default function Employees() {
                   name="contact"
                   value={formData.contact}
                   onChange={handleChange}
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    border: '2px solid #3a3a4e',
+                    borderRadius: '6px',
+                    backgroundColor: '#1e1e2e',
+                    color: '#fff',
+                  }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                  Department
+                </label>
+                <input
+                  type="text"
+                  name="department"
+                  value={formData.department}
+                  onChange={handleChange}
+                  placeholder="e.g., IT, HR, Sales"
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    border: '2px solid #3a3a4e',
+                    borderRadius: '6px',
+                    backgroundColor: '#1e1e2e',
+                    color: '#fff',
+                  }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                  Base Salary (PKR)
+                </label>
+                <input
+                  type="number"
+                  name="base_salary"
+                  value={formData.base_salary}
+                  onChange={handleChange}
+                  placeholder="e.g., 15000"
                   style={{
                     width: '100%',
                     padding: '10px',
