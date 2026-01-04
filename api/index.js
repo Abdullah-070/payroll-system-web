@@ -147,7 +147,7 @@ app.post('/api/auth/register', async (req, res) => {
         email: email,
         designation: 'Employee',
         department: 'General',
-        base_salary: 0
+        salary: 0
       })
       .select();
 
@@ -245,17 +245,22 @@ app.post('/api/employees', async (req, res) => {
       return res.status(403).json({ error: 'Admin access required' });
     }
 
-    const { name, age, organization, designation, email, contact } = req.body;
+    const { name, age, organization, designation, email, contact, department, salary, join_date, employment_type, qualification } = req.body;
 
     const { data, error } = await supabase
       .from('employees')
       .insert({
         name,
-        age,
+        age: age ? parseInt(age) : null,
         organization,
         designation,
         email,
-        contact
+        contact,
+        department,
+        salary: salary ? parseFloat(salary) : null,
+        join_date: join_date || null,
+        employment_type,
+        qualification
       })
       .select();
 
@@ -279,9 +284,22 @@ app.put('/api/employees/:id', async (req, res) => {
       return res.status(403).json({ error: 'Admin access required' });
     }
 
+    const { name, age, organization, designation, email, contact, department, base_salary } = req.body;
+    
+    const updateData = {
+      name: name || null,
+      age: age ? parseInt(age) : null,
+      organization: organization || null,
+      designation: designation || null,
+      email: email || null,
+      contact: contact || null,
+      department: department || null,
+      base_salary: base_salary ? parseFloat(base_salary) : null,
+    };
+
     const { data, error } = await supabase
       .from('employees')
-      .update(req.body)
+      .update(updateData)
       .eq('emp_id', req.params.id)
       .select();
 
@@ -432,15 +450,15 @@ app.post('/api/payroll/generate', async (req, res) => {
 
     // Generate payroll for each employee
     for (const emp of employees) {
-      // Skip if base_salary is not set
-      if (!emp.base_salary || emp.base_salary === 0) {
+      // Skip if salary is not set
+      if (!emp.salary || emp.salary === 0) {
         continue;
       }
 
       // Calculate basic salary (assuming 22 working days per month)
       const working_days = 22;
-      const rate_per_day = emp.base_salary / 22;
-      const basic_salary = emp.base_salary;
+      const rate_per_day = emp.salary / 22;
+      const basic_salary = emp.salary;
       const gross_salary = basic_salary;
       const net_salary = basic_salary;
       const total_salary = net_salary;

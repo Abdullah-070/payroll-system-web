@@ -19,7 +19,10 @@ export default function Employees() {
     email: '',
     contact: '',
     department: '',
-    base_salary: '',
+    salary: '',
+    join_date: '',
+    employment_type: '',
+    qualification: '',
   });
 
   useEffect(() => {
@@ -86,7 +89,10 @@ export default function Employees() {
       email: employee.email || '',
       contact: employee.contact || '',
       department: employee.department || '',
-      base_salary: employee.base_salary || '',
+      salary: employee.salary || '',
+      join_date: employee.join_date || '',
+      employment_type: employee.employment_type || '',
+      qualification: employee.qualification || '',
     });
     setShowForm(true);
   };
@@ -101,7 +107,10 @@ export default function Employees() {
       email: '',
       contact: '',
       department: '',
-      base_salary: '',
+      salary: '',
+      join_date: '',
+      employment_type: '',
+      qualification: '',
     });
     setShowForm(false);
   };
@@ -309,14 +318,77 @@ export default function Employees() {
               </div>
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
-                  Base Salary (PKR)
+                  Salary (PKR)
                 </label>
                 <input
                   type="number"
-                  name="base_salary"
-                  value={formData.base_salary}
+                  name="salary"
+                  value={formData.salary}
                   onChange={handleChange}
                   placeholder="e.g., 15000"
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    border: '2px solid #3a3a4e',
+                    borderRadius: '6px',
+                    backgroundColor: '#1e1e2e',
+                    color: '#fff',
+                  }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                  Join Date
+                </label>
+                <input
+                  type="date"
+                  name="join_date"
+                  value={formData.join_date}
+                  onChange={handleChange}
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    border: '2px solid #3a3a4e',
+                    borderRadius: '6px',
+                    backgroundColor: '#1e1e2e',
+                    color: '#fff',
+                  }}
+                />
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                  Employment Type
+                </label>
+                <select
+                  name="employment_type"
+                  value={formData.employment_type}
+                  onChange={handleChange}
+                  style={{
+                    width: '100%',
+                    padding: '10px',
+                    border: '2px solid #3a3a4e',
+                    borderRadius: '6px',
+                    backgroundColor: '#1e1e2e',
+                    color: '#fff',
+                  }}
+                >
+                  <option value="">Select Type</option>
+                  <option value="Full-time">Full-time</option>
+                  <option value="Part-time">Part-time</option>
+                  <option value="Contract">Contract</option>
+                  <option value="Temporary">Temporary</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                  Qualification
+                </label>
+                <input
+                  type="text"
+                  name="qualification"
+                  value={formData.qualification}
+                  onChange={handleChange}
+                  placeholder="e.g., Bachelor's Degree"
                   style={{
                     width: '100%',
                     padding: '10px',

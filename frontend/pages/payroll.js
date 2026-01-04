@@ -16,10 +16,30 @@ export default function Payroll() {
     emp_id: '',
     working_days: '',
     rate_per_day: '',
-    total_allowances: '',
-    overtime_bonus: '',
-    total_bonus: '',
-    total_deductions: '',
+    // Leaves
+    number_of_leaves: '0',
+    deduction_per_leave: '0',
+    // Allowances
+    house_rent_allowance: '0',
+    transport_allowance: '0',
+    mobile_allowance: '0',
+    medical_allowance: '0',
+    fuel_allowance: '0',
+    vehicle_repair_allowance: '0',
+    other_allowance: '0',
+    // Bonuses
+    annual_bonus: '0',
+    performance_bonus: '0',
+    overtime_bonus: '0',
+    // Overtime
+    overtime_rate: '0',
+    overtime_hours: '0',
+    // Deductions
+    income_tax: '0',
+    loan_deduction: '0',
+    advance_deduction: '0',
+    insurance_deduction: '0',
+    other_deductions: '0',
   });
   const [generateMonth, setGenerateMonth] = useState(new Date().getMonth() + 1);
   const [generateYear, setGenerateYear] = useState(new Date().getFullYear());
@@ -61,24 +81,98 @@ export default function Payroll() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await payroll.create({
-        ...formData,
-        emp_id: parseInt(formData.emp_id),
-        working_days: parseInt(formData.working_days),
-        rate_per_day: parseFloat(formData.rate_per_day),
-        total_allowances: parseFloat(formData.total_allowances || 0),
+      // Calculate totals
+      const allowances = {
+        house_rent_allowance: parseFloat(formData.house_rent_allowance || 0),
+        transport_allowance: parseFloat(formData.transport_allowance || 0),
+        mobile_allowance: parseFloat(formData.mobile_allowance || 0),
+        medical_allowance: parseFloat(formData.medical_allowance || 0),
+        fuel_allowance: parseFloat(formData.fuel_allowance || 0),
+        vehicle_repair_allowance: parseFloat(formData.vehicle_repair_allowance || 0),
+        other_allowance: parseFloat(formData.other_allowance || 0),
+      };
+      
+      const bonuses = {
+        annual_bonus: parseFloat(formData.annual_bonus || 0),
+        performance_bonus: parseFloat(formData.performance_bonus || 0),
         overtime_bonus: parseFloat(formData.overtime_bonus || 0),
-        total_bonus: parseFloat(formData.total_bonus || 0),
-        total_deductions: parseFloat(formData.total_deductions || 0),
+      };
+
+      const deductions = {
+        income_tax: parseFloat(formData.income_tax || 0),
+        loan_deduction: parseFloat(formData.loan_deduction || 0),
+        advance_deduction: parseFloat(formData.advance_deduction || 0),
+        insurance_deduction: parseFloat(formData.insurance_deduction || 0),
+        other_deductions: parseFloat(formData.other_deductions || 0),
+      };
+
+      // Leave calculations
+      const number_of_leaves = parseInt(formData.number_of_leaves || 0);
+      const deduction_per_leave = parseFloat(formData.deduction_per_leave || 0);
+      const leave_deduction = number_of_leaves * deduction_per_leave;
+
+      const working_days = parseInt(formData.working_days || 0);
+      const rate_per_day = parseFloat(formData.rate_per_day || 0);
+      const basic_salary = working_days * rate_per_day;
+      
+      const total_allowances = Object.values(allowances).reduce((a, b) => a + b, 0);
+      const total_bonus = Object.values(bonuses).reduce((a, b) => a + b, 0);
+      const overtime_bonus = bonuses.overtime_bonus;
+      const total_deductions = Object.values(deductions).reduce((a, b) => a + b, 0) + leave_deduction;
+      
+      const gross_salary = basic_salary + total_allowances;
+      const net_salary = gross_salary + total_bonus - total_deductions;
+      const total_salary = net_salary;
+
+      await payroll.create({
+        emp_id: parseInt(formData.emp_id),
+        working_days,
+        rate_per_day,
+        basic_salary,
+        number_of_leaves,
+        deduction_per_leave,
+        ...allowances,
+        total_allowances,
+        ...bonuses,
+        total_bonus,
+        overtime_bonus,
+        overtime_rate: parseFloat(formData.overtime_rate || 0),
+        overtime_hours: parseFloat(formData.overtime_hours || 0),
+        ...deductions,
+        total_deductions,
+        gross_salary,
+        net_salary,
+        total_salary,
+        payroll_date: new Date(),
+        payroll_month: new Date().getMonth() + 1,
+        payroll_year: new Date().getFullYear(),
+        status: 'draft'
       });
+
+      // Reset form
       setFormData({
         emp_id: '',
         working_days: '',
         rate_per_day: '',
-        total_allowances: '',
-        overtime_bonus: '',
-        total_bonus: '',
-        total_deductions: '',
+        number_of_leaves: '0',
+        deduction_per_leave: '0',
+        house_rent_allowance: '0',
+        transport_allowance: '0',
+        mobile_allowance: '0',
+        medical_allowance: '0',
+        fuel_allowance: '0',
+        vehicle_repair_allowance: '0',
+        other_allowance: '0',
+        annual_bonus: '0',
+        performance_bonus: '0',
+        overtime_bonus: '0',
+        overtime_rate: '0',
+        overtime_hours: '0',
+        income_tax: '0',
+        loan_deduction: '0',
+        advance_deduction: '0',
+        insurance_deduction: '0',
+        other_deductions: '0',
       });
       setShowForm(false);
       loadData();
@@ -212,141 +306,500 @@ export default function Payroll() {
               padding: '30px',
               borderRadius: '12px',
               marginBottom: '30px',
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-              gap: '20px',
             }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
-                  Employee
-                </label>
-                <select
-                  name="emp_id"
-                  value={formData.emp_id}
-                  onChange={handleChange}
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '2px solid #3a3a4e',
-                    borderRadius: '6px',
-                    backgroundColor: '#1e1e2e',
-                    color: '#fff',
-                  }}
-                >
-                  <option value="">Select Employee</option>
-                  {employeeList.map((emp) => (
-                    <option key={emp.emp_id} value={emp.emp_id}>
-                      {emp.name}
-                    </option>
-                  ))}
-                </select>
+              {/* Basic Information */}
+              <h3 style={{ color: '#00ff88', marginBottom: '20px', fontSize: '18px', fontWeight: '600' }}>
+                📋 Basic Information
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '30px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Employee
+                  </label>
+                  <select
+                    name="emp_id"
+                    value={formData.emp_id}
+                    onChange={handleChange}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  >
+                    <option value="">Select Employee</option>
+                    {employeeList.map((emp) => (
+                      <option key={emp.emp_id} value={emp.emp_id}>
+                        {emp.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Working Days
+                  </label>
+                  <input
+                    type="number"
+                    name="working_days"
+                    value={formData.working_days}
+                    onChange={handleChange}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Rate per Day (PKR)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="rate_per_day"
+                    value={formData.rate_per_day}
+                    onChange={handleChange}
+                    required
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
               </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
-                  Working Days
-                </label>
-                <input
-                  type="number"
-                  name="working_days"
-                  value={formData.working_days}
-                  onChange={handleChange}
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '2px solid #3a3a4e',
-                    borderRadius: '6px',
-                    backgroundColor: '#1e1e2e',
-                    color: '#fff',
-                  }}
-                />
+
+              {/* Leaves */}
+              <h3 style={{ color: '#00ff88', marginBottom: '20px', fontSize: '18px', fontWeight: '600' }}>
+                🏖️ Leaves
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '30px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Number of Leaves
+                  </label>
+                  <input
+                    type="number"
+                    name="number_of_leaves"
+                    value={formData.number_of_leaves}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Deduction per Leave (PKR)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="deduction_per_leave"
+                    value={formData.deduction_per_leave}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
               </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
-                  Rate per Day
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  name="rate_per_day"
-                  value={formData.rate_per_day}
-                  onChange={handleChange}
-                  required
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '2px solid #3a3a4e',
-                    borderRadius: '6px',
-                    backgroundColor: '#1e1e2e',
-                    color: '#fff',
-                  }}
-                />
+
+              {/* Allowances */}
+              <h3 style={{ color: '#00ff88', marginBottom: '20px', fontSize: '18px', fontWeight: '600' }}>
+                💰 Allowances
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '30px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    House Rent Allowance
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="house_rent_allowance"
+                    value={formData.house_rent_allowance}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Transport Allowance
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="transport_allowance"
+                    value={formData.transport_allowance}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Mobile Allowance
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="mobile_allowance"
+                    value={formData.mobile_allowance}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Medical Allowance
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="medical_allowance"
+                    value={formData.medical_allowance}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Fuel Allowance
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="fuel_allowance"
+                    value={formData.fuel_allowance}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Vehicle Repair Allowance
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="vehicle_repair_allowance"
+                    value={formData.vehicle_repair_allowance}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Other Allowance
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="other_allowance"
+                    value={formData.other_allowance}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
               </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
-                  Allowances
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  name="total_allowances"
-                  value={formData.total_allowances}
-                  onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '2px solid #3a3a4e',
-                    borderRadius: '6px',
-                    backgroundColor: '#1e1e2e',
-                    color: '#fff',
-                  }}
-                />
+
+              {/* Bonuses */}
+              <h3 style={{ color: '#00ff88', marginBottom: '20px', fontSize: '18px', fontWeight: '600' }}>
+                🎁 Bonuses
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '30px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Annual Bonus
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="annual_bonus"
+                    value={formData.annual_bonus}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Performance Bonus
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="performance_bonus"
+                    value={formData.performance_bonus}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Overtime Bonus
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="overtime_bonus"
+                    value={formData.overtime_bonus}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
               </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
-                  Deductions
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  name="total_deductions"
-                  value={formData.total_deductions}
-                  onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '2px solid #3a3a4e',
-                    borderRadius: '6px',
-                    backgroundColor: '#1e1e2e',
-                    color: '#fff',
-                  }}
-                />
+
+              {/* Overtime Details */}
+              <h3 style={{ color: '#00ff88', marginBottom: '20px', fontSize: '18px', fontWeight: '600' }}>
+                ⏱️ Overtime Details
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '30px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Overtime Rate (PKR/hour)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="overtime_rate"
+                    value={formData.overtime_rate}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Overtime Hours
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="overtime_hours"
+                    value={formData.overtime_hours}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
               </div>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
-                  Bonus
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  name="total_bonus"
-                  value={formData.total_bonus}
-                  onChange={handleChange}
-                  style={{
-                    width: '100%',
-                    padding: '10px',
-                    border: '2px solid #3a3a4e',
-                    borderRadius: '6px',
-                    backgroundColor: '#1e1e2e',
-                    color: '#fff',
-                  }}
-                />
+
+              {/* Deductions */}
+              <h3 style={{ color: '#00ff88', marginBottom: '20px', fontSize: '18px', fontWeight: '600' }}>
+                📉 Deductions
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '30px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Income Tax
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="income_tax"
+                    value={formData.income_tax}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Loan Deduction
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="loan_deduction"
+                    value={formData.loan_deduction}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Advance Deduction
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="advance_deduction"
+                    value={formData.advance_deduction}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Insurance Deduction
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="insurance_deduction"
+                    value={formData.insurance_deduction}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
+                    Other Deductions
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    name="other_deductions"
+                    value={formData.other_deductions}
+                    onChange={handleChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      border: '2px solid #3a3a4e',
+                      borderRadius: '6px',
+                      backgroundColor: '#1e1e2e',
+                      color: '#fff',
+                    }}
+                  />
+                </div>
               </div>
+
+              {/* Submit Button */}
               <button
                 type="submit"
                 style={{
-                  gridColumn: '1 / -1',
+                  width: '100%',
                   padding: '12px',
                   backgroundColor: '#00ff88',
                   color: '#000',
@@ -354,9 +807,10 @@ export default function Payroll() {
                   borderRadius: '6px',
                   fontWeight: 'bold',
                   cursor: 'pointer',
+                  fontSize: '16px',
                 }}
               >
-                Create Payroll
+                ➕ Create Payroll
               </button>
             </form>
           )}
