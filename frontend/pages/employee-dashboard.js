@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Cookies from 'js-cookie';
 import Layout from '../components/Layout';
+import { employees } from '../utils/api';
 
 export default function EmployeeDashboard() {
   const router = useRouter();
@@ -26,6 +27,26 @@ export default function EmployeeDashboard() {
       return;
     }
     setUser(parsedUser);
+    
+    // Fetch employee profile data
+    const fetchProfile = async () => {
+      try {
+        if (parsedUser.emp_id) {
+          const response = await employees.getOne(parsedUser.emp_id);
+          const emp = response.data;
+          setProfile({
+            name: emp.name || 'Loading...',
+            designation: emp.designation || '--',
+            salary: emp.base_salary ? `PKR ${parseFloat(emp.base_salary).toFixed(2)}` : '--',
+            department: emp.department || '--',
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching profile:', err);
+      }
+    };
+    
+    fetchProfile();
   }, [router]);
 
   if (!user) {
