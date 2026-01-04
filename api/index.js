@@ -139,18 +139,41 @@ app.post('/api/auth/register', async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Try to insert user into Supabase
+    // First, create an employee record
+    const { data: empData, error: empError } = await supabase
+      .from('employees')
+      .insert({
+        name: username,
+        email: email,
+        designation: 'Employee',
+        department: 'General',
+        base_salary: 0
+      })
+      .select();
+
+    if (empError) {
+      console.error('Employee creation error:', empError);
+      return res.status(400).json({ error: 'Failed to create employee record' });
+    }
+
+    const emp_id = empData[0].emp_id;
+
+    // Now create the user with the emp_id
     const { data, error } = await supabase
       .from('users')
       .insert({
         username,
         password_hash: hashedPassword,
         email,
-        role: 'employee'
+        role: 'employee',
+        emp_id: emp_id
       })
       .select();
 
     if (error) {
+      // If user creation fails, delete the employee record we just created
+      await supabase.from('employees').delete().eq('emp_id', emp_id);
+      
       // Handle common Supabase errors
       if (error.message.includes('duplicate')) {
         return res.status(400).json({ error: 'Username or email already exists' });
@@ -164,7 +187,8 @@ app.post('/api/auth/register', async (req, res) => {
         user_id: data[0].user_id,
         username: data[0].username,
         email: data[0].email,
-        role: data[0].role
+        role: data[0].role,
+        emp_id: data[0].emp_id
       }
     });
   } catch (error) {
