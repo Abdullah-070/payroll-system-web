@@ -284,7 +284,7 @@ app.put('/api/employees/:id', async (req, res) => {
       return res.status(403).json({ error: 'Admin access required' });
     }
 
-    const { name, age, organization, designation, email, contact, department, base_salary } = req.body;
+    const { name, age, organization, designation, email, contact, department, salary, join_date, employment_type, qualification } = req.body;
     
     const updateData = {
       name: name || null,
@@ -294,7 +294,10 @@ app.put('/api/employees/:id', async (req, res) => {
       email: email || null,
       contact: contact || null,
       department: department || null,
-      base_salary: base_salary ? parseFloat(base_salary) : null,
+      salary: salary ? parseFloat(salary) : null,
+      join_date: join_date || null,
+      employment_type: employment_type || null,
+      qualification: qualification || null,
     };
 
     const { data, error } = await supabase

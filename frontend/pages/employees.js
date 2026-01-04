@@ -70,7 +70,10 @@ export default function Employees() {
         email: '',
         contact: '',
         department: '',
-        base_salary: '',
+        salary: '',
+        join_date: '',
+        employment_type: '',
+        qualification: '',
       });
       setShowForm(false);
       loadEmployees();
