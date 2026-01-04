@@ -48,7 +48,7 @@ export default function Payroll() {
     const token = Cookies.get('token');
     const userData = Cookies.get('user');
     if (!token) {
-      router.push('/auth/login');
+      router.push('/');
       return;
     }
     const parsedUser = JSON.parse(userData);

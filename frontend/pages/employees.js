@@ -29,7 +29,7 @@ export default function Employees() {
   useEffect(() => {
     const token = Cookies.get('token');
     if (!token) {
-      router.push('/auth/login');
+      router.push('/');
       return;
     }
     loadEmployees();

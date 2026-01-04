@@ -18,7 +18,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const userData = Cookies.get('user');
     if (!userData) {
-      router.push('/auth/login');
+      router.push('/');
       return;
     }
     const parsedUser = JSON.parse(userData);
@@ -79,7 +79,7 @@ export default function AdminDashboard() {
               onClick={() => {
                 Cookies.remove('token');
                 Cookies.remove('user');
-                router.push('/auth/login');
+                router.push('/');
               }}
               style={{
                 padding: '10px 20px',

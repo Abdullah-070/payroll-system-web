@@ -13,7 +13,7 @@ export default function Dashboard() {
     const userData = Cookies.get('user');
 
     if (!token) {
-      router.push('/auth/login');
+      router.push('/');
       return;
     }
 
