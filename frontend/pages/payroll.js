@@ -42,9 +42,7 @@ export default function Payroll() {
     insurance_deduction: '0',
     other_deductions: '0',
   });
-  const [generateMonth, setGenerateMonth] = useState(new Date().getMonth() + 1);
-  const [generateYear, setGenerateYear] = useState(new Date().getFullYear());
-  const [generatingPayroll, setGeneratingPayroll] = useState(false);
+
 
   useEffect(() => {
     const token = Cookies.get('token');
@@ -191,24 +189,6 @@ export default function Payroll() {
     }
   };
 
-  const handleGeneratePayroll = async () => {
-    if (!window.confirm(`Generate payroll for ${generateMonth}/${generateYear} for all employees?`)) {
-      return;
-    }
-    
-    setGeneratingPayroll(true);
-    setError('');
-    
-    try {
-      const response = await payroll.generate(generateMonth, generateYear);
-      alert(`✓ ${response.data.message}`);
-      loadData();
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to generate payroll');
-    } finally {
-      setGeneratingPayroll(false);
-    }
-  };
 
   const handleEdit = (record) => {
     setEditingId(record.payroll_id);
@@ -322,67 +302,6 @@ export default function Payroll() {
           {error && (
             <div style={{ backgroundColor: '#ff4455', color: '#fff', padding: '12px', borderRadius: '6px', marginBottom: '20px' }}>
               {error}
-            </div>
-          )}
-
-          {user?.role === 'admin' && (
-            <div style={{ backgroundColor: '#2a2a3e', padding: '20px', borderRadius: '12px', marginBottom: '30px', border: '1px solid #3a3a4e' }}>
-              <h3 style={{ color: '#00d4ff', marginBottom: '15px', fontSize: '16px', fontWeight: '600' }}>
-                🚀 Auto-Generate Payroll for All Employees
-              </h3>
-              <div style={{ display: 'grid', gridTemplateColumns: 'auto auto auto auto', gap: '15px', alignItems: 'flex-end' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', color: '#aaa', fontSize: '12px' }}>Month</label>
-                  <select
-                    value={generateMonth}
-                    onChange={(e) => setGenerateMonth(parseInt(e.target.value))}
-                    style={{
-                      padding: '8px',
-                      border: '2px solid #3a3a4e',
-                      borderRadius: '6px',
-                      backgroundColor: '#1e1e2e',
-                      color: '#fff',
-                    }}
-                  >
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((m) => (
-                      <option key={m} value={m}>{m}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '5px', color: '#aaa', fontSize: '12px' }}>Year</label>
-                  <input
-                    type="number"
-                    value={generateYear}
-                    onChange={(e) => setGenerateYear(parseInt(e.target.value))}
-                    style={{
-                      padding: '8px',
-                      border: '2px solid #3a3a4e',
-                      borderRadius: '6px',
-                      backgroundColor: '#1e1e2e',
-                      color: '#fff',
-                      width: '80px',
-                    }}
-                  />
-                </div>
-                <button
-                  onClick={handleGeneratePayroll}
-                  disabled={generatingPayroll}
-                  style={{
-                    padding: '8px 16px',
-                    backgroundColor: '#ff6b6b',
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '6px',
-                    fontWeight: 'bold',
-                    cursor: generatingPayroll ? 'not-allowed' : 'pointer',
-                    opacity: generatingPayroll ? 0.6 : 1,
-                    fontSize: '14px',
-                  }}
-                >
-                  {generatingPayroll ? 'Generating...' : 'Generate'}
-                </button>
-              </div>
             </div>
           )}
 
