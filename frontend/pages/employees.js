@@ -10,6 +10,7 @@ export default function Employees() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     age: '',
@@ -50,7 +51,14 @@ export default function Employees() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await employees.create(formData);
+      if (editingId) {
+        // Update existing employee
+        await employees.update(editingId, formData);
+        setEditingId(null);
+      } else {
+        // Create new employee
+        await employees.create(formData);
+      }
       setFormData({
         name: '',
         age: '',
@@ -64,8 +72,38 @@ export default function Employees() {
       setShowForm(false);
       loadEmployees();
     } catch (err) {
-      setError('Failed to add employee');
+      setError(editingId ? 'Failed to update employee' : 'Failed to add employee');
     }
+  };
+
+  const handleEdit = (employee) => {
+    setEditingId(employee.emp_id);
+    setFormData({
+      name: employee.name || '',
+      age: employee.age || '',
+      organization: employee.organization || '',
+      designation: employee.designation || '',
+      email: employee.email || '',
+      contact: employee.contact || '',
+      department: employee.department || '',
+      base_salary: employee.base_salary || '',
+    });
+    setShowForm(true);
+  };
+
+  const handleCancel = () => {
+    setEditingId(null);
+    setFormData({
+      name: '',
+      age: '',
+      organization: '',
+      designation: '',
+      email: '',
+      contact: '',
+      department: '',
+      base_salary: '',
+    });
+    setShowForm(false);
   };
 
   const handleDelete = async (id) => {
@@ -94,7 +132,13 @@ export default function Employees() {
               Employees
             </h1>
             <button
-              onClick={() => setShowForm(!showForm)}
+              onClick={() => {
+                if (showForm) {
+                  handleCancel();
+                } else {
+                  setShowForm(true);
+                }
+              }}
               style={{
                 padding: '12px 24px',
                 backgroundColor: '#00d4ff',
@@ -125,6 +169,9 @@ export default function Employees() {
               gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
               gap: '20px',
             }}>
+              <h3 style={{ gridColumn: '1 / -1', color: '#00d4ff', marginBottom: '10px' }}>
+                {editingId ? '✏️ Edit Employee' : '➕ Add New Employee'}
+              </h3>
               <div>
                 <label style={{ display: 'block', marginBottom: '8px', color: '#00d4ff', fontWeight: '600' }}>
                   Name
@@ -293,7 +340,7 @@ export default function Employees() {
                   cursor: 'pointer',
                 }}
               >
-                Add Employee
+                {editingId ? '💾 Update Employee' : '➕ Add Employee'}
               </button>
             </form>
           )}
@@ -330,20 +377,38 @@ export default function Employees() {
                       <td style={{ padding: '12px', color: '#fff' }}>{emp.designation || '-'}</td>
                       <td style={{ padding: '12px', color: '#fff' }}>{emp.email || '-'}</td>
                       <td style={{ padding: '12px' }}>
-                        <button
-                          onClick={() => handleDelete(emp.emp_id)}
-                          style={{
-                            padding: '8px 16px',
-                            backgroundColor: '#ff4455',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            fontWeight: 'bold',
-                          }}
-                        >
-                          Delete
-                        </button>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button
+                            onClick={() => handleEdit(emp)}
+                            style={{
+                              padding: '8px 16px',
+                              backgroundColor: '#00d4ff',
+                              color: '#000',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              fontWeight: 'bold',
+                              fontSize: '12px',
+                            }}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(emp.emp_id)}
+                            style={{
+                              padding: '8px 16px',
+                              backgroundColor: '#ff4455',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '4px',
+                              cursor: 'pointer',
+                              fontWeight: 'bold',
+                              fontSize: '12px',
+                            }}
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
