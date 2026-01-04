@@ -73,6 +73,8 @@ export const payroll = {
   getAll: (filters = {}) =>
     api.get('/payroll', { params: filters }),
   create: (data) => api.post('/payroll', data),
+  update: (id, data) => api.put(`/payroll/${id}`, data),
+  delete: (id) => api.delete(`/payroll/${id}`),
   getSummary: () => api.get('/payroll/summary'),
   generate: (month, year) =>
     api.post('/payroll/generate', { month, year }),

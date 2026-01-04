@@ -508,6 +508,67 @@ app.post('/api/payroll/generate', async (req, res) => {
   }
 });
 
+// Update payroll record
+app.put('/api/payroll/:id', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.role !== 'admin') {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const { id } = req.params;
+    const updateData = req.body;
+
+    const { data, error } = await supabase
+      .from('payroll')
+      .update(updateData)
+      .eq('payroll_id', id)
+      .select();
+
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      return res.status(404).json({ error: 'Payroll record not found' });
+    }
+
+    res.json(data[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete payroll record
+app.delete('/api/payroll/:id', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.role !== 'admin') {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    const { id } = req.params;
+
+    const { error } = await supabase
+      .from('payroll')
+      .delete()
+      .eq('payroll_id', id);
+
+    if (error) throw error;
+
+    res.json({ message: 'Payroll record deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get payroll summary
 app.get('/api/payroll/summary', async (req, res) => {
   try {

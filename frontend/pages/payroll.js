@@ -12,6 +12,7 @@ export default function Payroll() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
     emp_id: '',
     working_days: '',
@@ -124,7 +125,7 @@ export default function Payroll() {
       const net_salary = gross_salary + total_bonus - total_deductions;
       const total_salary = net_salary;
 
-      await payroll.create({
+      const payrollData = {
         emp_id: parseInt(formData.emp_id),
         working_days,
         rate_per_day,
@@ -147,7 +148,16 @@ export default function Payroll() {
         payroll_month: new Date().getMonth() + 1,
         payroll_year: new Date().getFullYear(),
         status: 'draft'
-      });
+      };
+
+      if (editingId) {
+        // Update existing payroll
+        await payroll.update(editingId, payrollData);
+        setEditingId(null);
+      } else {
+        // Create new payroll
+        await payroll.create(payrollData);
+      }
 
       // Reset form
       setFormData({
@@ -177,7 +187,7 @@ export default function Payroll() {
       setShowForm(false);
       loadData();
     } catch (err) {
-      setError('Failed to create payroll record');
+      setError('Failed to save payroll record');
     }
   };
 
@@ -200,6 +210,77 @@ export default function Payroll() {
     }
   };
 
+  const handleEdit = (record) => {
+    setEditingId(record.payroll_id);
+    setFormData({
+      emp_id: record.emp_id.toString(),
+      working_days: record.working_days.toString(),
+      rate_per_day: record.rate_per_day.toString(),
+      number_of_leaves: record.number_of_leaves?.toString() || '0',
+      deduction_per_leave: record.deduction_per_leave?.toString() || '0',
+      house_rent_allowance: record.house_rent_allowance?.toString() || '0',
+      transport_allowance: record.transport_allowance?.toString() || '0',
+      mobile_allowance: record.mobile_allowance?.toString() || '0',
+      medical_allowance: record.medical_allowance?.toString() || '0',
+      fuel_allowance: record.fuel_allowance?.toString() || '0',
+      vehicle_repair_allowance: record.vehicle_repair_allowance?.toString() || '0',
+      other_allowance: record.other_allowance?.toString() || '0',
+      annual_bonus: record.annual_bonus?.toString() || '0',
+      performance_bonus: record.performance_bonus?.toString() || '0',
+      overtime_bonus: record.overtime_bonus?.toString() || '0',
+      overtime_rate: record.overtime_rate?.toString() || '0',
+      overtime_hours: record.overtime_hours?.toString() || '0',
+      income_tax: record.income_tax?.toString() || '0',
+      loan_deduction: record.loan_deduction?.toString() || '0',
+      advance_deduction: record.advance_deduction?.toString() || '0',
+      insurance_deduction: record.insurance_deduction?.toString() || '0',
+      other_deductions: record.other_deductions?.toString() || '0',
+    });
+    setShowForm(true);
+  };
+
+  const handleCancel = () => {
+    setEditingId(null);
+    setFormData({
+      emp_id: '',
+      working_days: '',
+      rate_per_day: '',
+      number_of_leaves: '0',
+      deduction_per_leave: '0',
+      house_rent_allowance: '0',
+      transport_allowance: '0',
+      mobile_allowance: '0',
+      medical_allowance: '0',
+      fuel_allowance: '0',
+      vehicle_repair_allowance: '0',
+      other_allowance: '0',
+      annual_bonus: '0',
+      performance_bonus: '0',
+      overtime_bonus: '0',
+      overtime_rate: '0',
+      overtime_hours: '0',
+      income_tax: '0',
+      loan_deduction: '0',
+      advance_deduction: '0',
+      insurance_deduction: '0',
+      other_deductions: '0',
+    });
+    setShowForm(false);
+  };
+
+  const handleDelete = async (payroll_id) => {
+    if (!window.confirm('Are you sure you want to delete this payroll record?')) {
+      return;
+    }
+
+    try {
+      await payroll.delete(payroll_id);
+      loadData();
+    } catch (err) {
+      setError('Failed to delete payroll record');
+    }
+  };
+
   if (loading) {
     return <div style={{ color: '#fff', textAlign: 'center', paddingTop: '40px' }}>Loading...</div>;
   }
@@ -217,7 +298,12 @@ export default function Payroll() {
             </h1>
             {user?.role === 'admin' && (
               <button
-                onClick={() => setShowForm(!showForm)}
+                onClick={() => {
+                  setShowForm(!showForm);
+                  if (showForm) {
+                    handleCancel();
+                  }
+                }}
                 style={{
                   padding: '12px 24px',
                   backgroundColor: '#00ff88',
@@ -228,7 +314,7 @@ export default function Payroll() {
                   cursor: 'pointer',
                 }}
               >
-                {showForm ? 'Cancel' : 'New Payroll'}
+                {showForm ? 'Cancel' : '➕ New Payroll'}
               </button>
             )}
           </div>
@@ -309,7 +395,7 @@ export default function Payroll() {
             }}>
               {/* Basic Information */}
               <h3 style={{ color: '#00ff88', marginBottom: '20px', fontSize: '18px', fontWeight: '600' }}>
-                📋 Basic Information
+                {editingId ? '✏️ Edit Payroll' : '📋 Create New Payroll'}
               </h3>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '20px', marginBottom: '30px' }}>
                 <div>
@@ -810,7 +896,7 @@ export default function Payroll() {
                   fontSize: '16px',
                 }}
               >
-                ➕ Create Payroll
+                {editingId ? '✏️ Update Payroll' : '➕ Create Payroll'}
               </button>
             </form>
           )}
@@ -835,6 +921,9 @@ export default function Payroll() {
                     <th style={{ padding: '12px', textAlign: 'left', color: '#00ff88', fontWeight: 'bold' }}>Gross Salary</th>
                     <th style={{ padding: '12px', textAlign: 'left', color: '#00ff88', fontWeight: 'bold' }}>Net Salary</th>
                     <th style={{ padding: '12px', textAlign: 'left', color: '#00ff88', fontWeight: 'bold' }}>Date</th>
+                    {user?.role === 'admin' && (
+                      <th style={{ padding: '12px', textAlign: 'left', color: '#00ff88', fontWeight: 'bold' }}>Actions</th>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -849,6 +938,41 @@ export default function Payroll() {
                       <td style={{ padding: '12px', color: '#fff' }}>
                         {new Date(record.payroll_date).toLocaleDateString()}
                       </td>
+                      {user?.role === 'admin' && (
+                        <td style={{ padding: '12px' }}>
+                          <button
+                            onClick={() => handleEdit(record)}
+                            style={{
+                              padding: '6px 12px',
+                              backgroundColor: '#00d4ff',
+                              color: '#000',
+                              border: 'none',
+                              borderRadius: '4px',
+                              fontWeight: 'bold',
+                              cursor: 'pointer',
+                              marginRight: '8px',
+                              fontSize: '12px'
+                            }}
+                          >
+                            ✏️ Edit
+                          </button>
+                          <button
+                            onClick={() => handleDelete(record.payroll_id)}
+                            style={{
+                              padding: '6px 12px',
+                              backgroundColor: '#ff4455',
+                              color: '#fff',
+                              border: 'none',
+                              borderRadius: '4px',
+                              fontWeight: 'bold',
+                              cursor: 'pointer',
+                              fontSize: '12px'
+                            }}
+                          >
+                            🗑️ Delete
+                          </button>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
