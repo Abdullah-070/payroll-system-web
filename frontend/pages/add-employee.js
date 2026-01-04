@@ -30,6 +30,16 @@ export default function AddEmployee() {
       router.push('/');
       return;
     }
+
+    // Pre-fill data from router query params (from create-employee-user page)
+    if (router.query.name || router.query.email || router.query.contact) {
+      setFormData((prev) => ({
+        ...prev,
+        name: router.query.name || prev.name,
+        email: router.query.email || prev.email,
+        contact: router.query.contact || prev.contact,
+      }));
+    }
   }, [router]);
 
   const handleChange = (e) => {

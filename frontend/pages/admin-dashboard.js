@@ -125,7 +125,7 @@ export default function AdminDashboard() {
             </h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px' }}>
               <button
-                onClick={() => router.push('/add-employee')}
+                onClick={() => router.push('/create-employee-user')}
                 style={{
                   padding: '15px 20px',
                   backgroundColor: '#ff6b9d',
