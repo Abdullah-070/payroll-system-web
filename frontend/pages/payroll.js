@@ -72,9 +72,26 @@ export default function Payroll() {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    
+    // When employee is selected, fetch their salary
+    if (name === 'emp_id' && value) {
+      try {
+        const employee = employeeList.find(emp => emp.emp_id === parseInt(value));
+        if (employee && employee.salary) {
+          // Auto-fill rate_per_day based on employee's salary (assuming 22 working days per month)
+          const ratePerDay = employee.salary / 22;
+          setFormData((prev) => ({ 
+            ...prev, 
+            rate_per_day: ratePerDay.toFixed(2)
+          }));
+        }
+      } catch (err) {
+        console.error('Error fetching employee salary:', err);
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -110,9 +127,12 @@ export default function Payroll() {
       const deduction_per_leave = parseFloat(formData.deduction_per_leave || 0);
       const leave_deduction = number_of_leaves * deduction_per_leave;
 
+      // Get basic salary from selected employee
+      const selectedEmployee = employeeList.find(emp => emp.emp_id === parseInt(formData.emp_id));
+      const basic_salary = selectedEmployee?.salary || 0;
+      
       const working_days = parseInt(formData.working_days || 0);
       const rate_per_day = parseFloat(formData.rate_per_day || 0);
-      const basic_salary = working_days * rate_per_day;
       
       const total_allowances = Object.values(allowances).reduce((a, b) => a + b, 0);
       const total_bonus = Object.values(bonuses).reduce((a, b) => a + b, 0);
